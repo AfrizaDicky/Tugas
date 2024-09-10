@@ -17,6 +17,8 @@ func main() {
 		//ReadTimeout: time.Second * 5,
 	}
 
+	var idCards []string
+
 	// Buka koneksi ke port
 	s, err := serial.OpenPort(c)
 	if err != nil {
@@ -36,17 +38,22 @@ func main() {
 		}
 
 		if n > 0 {
-			// Konversi hasil baca ke string hex
-			tag := hex.EncodeToString(buf)
+			if !contains(idCards, tagManipulasi) {
+				idCards = append(idCards, tagManipulasi)
 
-			// Hapus 8 digit pertama dan 2 digit terakhir
-			if len(tag) >= 20 {
-				tagManipulasi := tag[8:32]
-				timestamp := time.Now().Format("2006-01-02 15:04:05")
-				fmt.Printf("Waktu: %s, RFID Tag (manipulasi): %s\n", timestamp, tagManipulasi)
-				time.Sleep(5 * time.Second)
-			} else {
-				fmt.Println("Data tidak lengkap, tidak dapat dimanipulasi.")
+			// Konversi hasil baca ke string hex
+				tag := hex.EncodeToString(buf)
+
+				// Hapus 8 digit pertama dan 2 digit terakhir
+				if len(tag) >= 20 {
+					tagManipulasi := tag[8:32]
+					timestamp := time.Now().Format("2006-01-02 15:04:05")
+					fmt.Printf("Waktu: %s, RFID Tag (manipulasi): %s\n", timestamp, tagManipulasi)
+					time.Sleep(5 * time.Second)
+				} else {
+					fmt.Println("Data tidak lengkap, tidak dapat dimanipulasi.")
+				}
+			
 			}
 		}
 	}
